@@ -53,7 +53,7 @@ function montarTr(paciente) {
 function montarTd(dado, classe) {
     var td = document.createElement("td");
     td.textContent = dado;
-    tbAltura.classList.add(classe);
+    td.classList.add(classe);
 
     return td;
 }
