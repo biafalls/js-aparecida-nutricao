@@ -39,19 +39,6 @@ Os arquivos JavaScript normalmente são importados ao final da tag `<body>`, gar
 
 ---
 
-### Organização por funcionalidades
-
-Cada arquivo deve possuir apenas uma responsabilidade.
-
-| Arquivo | Responsabilidade |
-|---------|------------------|
-| calcula-imc.js | Calcula o IMC dos pacientes |
-| form.js | Adiciona novos pacientes |
-| remover-paciente.js | Remove pacientes |
-| filtra.js | Filtra pacientes |
-
----
-
 # 🌐 Manipulação do DOM
 
 O **DOM (Document Object Model)** representa toda a estrutura HTML como uma árvore de objetos, permitindo que o JavaScript modifique a página dinamicamente.
@@ -267,18 +254,6 @@ if (peso <= 0) {
 
 # 📦 Arrays e Objetos
 
-### Objetos
-
-Objetos agrupam informações relacionadas.
-
-```javascript
-var paciente = {
-    nome: "Maria",
-    peso: 65,
-    altura: 1.70
-};
-```
-
 ---
 
 ### push()
@@ -300,6 +275,200 @@ erros.forEach(function(erro){
     console.log(erro);
 });
 ```
+
+---
+
+## 📦 Objetos
+
+### O que é um objeto?
+
+Objetos são estruturas utilizadas para armazenar informações relacionadas em pares **chave: valor**. Eles permitem agrupar diferentes características de um mesmo elemento em uma única estrutura.
+
+No projeto, cada paciente foi representado por um objeto contendo seus dados.
+
+```javascript
+var paciente = {
+    nome: "Maria",
+    peso: 65,
+    altura: 1.70,
+    gordura: 18
+};
+```
+
+Dessa forma, todas as informações referentes ao paciente ficam organizadas em um único objeto.
+
+Também é possível acessar suas propriedades utilizando a **notação por ponto**.
+
+```javascript
+console.log(paciente.nome);
+console.log(paciente.peso);
+```
+
+---
+
+### Criando objetos a partir de um formulário
+
+Durante o cadastro de pacientes, os dados digitados pelo usuário foram transformados em um objeto antes de serem adicionados à tabela.
+
+```javascript
+function obtemPacienteDoFormulario(form) {
+
+    var paciente = {
+        nome: form.nome.value,
+        peso: form.peso.value,
+        altura: form.altura.value,
+        gordura: form.gordura.value
+    };
+
+    return paciente;
+}
+```
+
+Essa abordagem facilita o transporte das informações entre diferentes funções da aplicação, além de tornar o código mais organizado e reutilizável.
+
+---
+
+## ⚡ Manipulação de Eventos
+
+### `this`
+
+Dentro de uma função utilizada como manipulador de eventos, `this` representa o elemento que disparou o evento.
+
+```javascript
+campoFiltro.addEventListener("input", function() {
+    console.log(this.value);
+});
+```
+
+Nesse exemplo, `this` representa o campo de texto onde o usuário está digitando.
+
+Outro exemplo utilizado durante o curso:
+
+```javascript
+this.classList.add("fadeOut");
+```
+
+Nesse caso, `this` representa a linha da tabela que sofreu o evento.
+
+> **Observação:** Em **Arrow Functions (`=>`)**, o comportamento do `this` é diferente, pois ele herda o contexto da função onde foi declarado.
+
+---
+
+### `event.target`
+
+O objeto `event` contém diversas informações sobre o evento ocorrido.
+
+A propriedade `target` representa o elemento que originou esse evento.
+
+```javascript
+console.log(event.target);
+```
+
+Se o usuário clicar em um botão, por exemplo, `event.target` será esse botão.
+
+---
+
+### `parentNode`
+
+A propriedade `parentNode` retorna o elemento pai de um determinado nó da página.
+
+Exemplo:
+
+```html
+<tr>
+    <td>Maria</td>
+</tr>
+```
+
+Se selecionarmos o elemento `<td>`:
+
+```javascript
+event.target.parentNode;
+```
+
+o resultado será o elemento `<tr>`, que é seu pai.
+
+---
+
+### `event.target.parentNode`
+
+Durante o curso, essa técnica foi utilizada para remover uma linha inteira da tabela quando o usuário realizava um duplo clique.
+
+```javascript
+tabela.addEventListener("dblclick", function(event) {
+    event.target.parentNode.remove();
+});
+```
+
+Funcionamento:
+
+1. O usuário realiza um duplo clique em uma célula da tabela.
+2. `event.target` identifica o elemento (`<td>`) clicado.
+3. `parentNode` sobe para a linha (`<tr>`).
+4. `remove()` exclui toda a linha da tabela.
+
+Essa técnica é bastante utilizada juntamente com a **delegação de eventos**, permitindo manipular elementos criados dinamicamente.
+
+---
+
+## 🔁 Funções
+
+### Funções nomeadas
+
+São funções que possuem um nome e podem ser reutilizadas em diferentes partes do código.
+
+```javascript
+function calculaImc(peso, altura) {
+    return peso / (altura * altura);
+}
+```
+
+Além de facilitar a reutilização, funções nomeadas tornam o código mais legível e organizado.
+
+---
+
+### Funções anônimas
+
+São funções que não possuem um nome e normalmente são utilizadas como **callbacks**, ou seja, funções executadas quando determinado evento acontece.
+
+```javascript
+botao.addEventListener("click", function() {
+    console.log("Botão clicado");
+});
+```
+
+Esse tipo de função foi amplamente utilizado durante o curso para tratar eventos do navegador.
+
+---
+
+### Responsabilidade única
+
+Uma das principais boas práticas apresentadas durante o curso foi criar funções pequenas, onde cada uma possui apenas uma responsabilidade.
+
+Em vez de concentrar toda a lógica em uma única função:
+
+```text
+Adicionar paciente
+        ↓
+Validar dados
+        ↓
+Calcular IMC
+        ↓
+Criar elementos HTML
+        ↓
+Adicionar paciente na tabela
+```
+
+O código foi dividido em funções menores e reutilizáveis:
+
+- `obtemPacienteDoFormulario()`
+- `calculaImc()`
+- `montaTr()`
+- `montaTd()`
+- `adicionaPacienteNaTabela()`
+- `exibeMensagensDeErro()`
+
+Essa organização torna o código mais legível, facilita a manutenção e reduz a duplicação de código.
 
 ---
 
@@ -397,6 +566,91 @@ if(xhr.status == 200){
     console.log("Erro ao carregar dados.");
 }
 ```
+
+---
+## 🛠️ Métodos importantes utilizados
+
+### preventDefault()
+
+Por padrão, ao clicar em um botão do tipo **submit**, o navegador envia o formulário e recarrega a página. O método `preventDefault()` impede esse comportamento, permitindo que o JavaScript trate os dados antes do envio.
+
+```javascript
+botaoAdicionar.addEventListener("click", function(event) {
+    event.preventDefault();
+
+    console.log("Formulário processado pelo JavaScript.");
+});
+```
+
+No projeto, esse método foi utilizado para evitar o recarregamento da página ao adicionar um novo paciente, permitindo validar os dados e atualizar a tabela dinamicamente.
+
+---
+
+### textContent
+
+A propriedade `textContent` permite ler ou alterar o conteúdo textual de um elemento HTML.
+
+Lendo um valor:
+
+```javascript
+var nome = paciente.querySelector(".info-nome").textContent;
+```
+
+Alterando um valor:
+
+```javascript
+titulo.textContent = "Lista de Pacientes";
+```
+
+Durante o projeto, `textContent` foi utilizado para obter informações da tabela, preencher novas células e alterar textos exibidos na página.
+
+---
+
+### innerHTML
+
+A propriedade `innerHTML` permite acessar ou modificar o conteúdo HTML de um elemento.
+
+```javascript
+listaErros.innerHTML = "";
+```
+
+No projeto, foi utilizada para limpar a lista de mensagens de erro antes de exibir novas validações, evitando que mensagens antigas permanecessem na tela.
+
+---
+
+### remove()
+
+O método `remove()` exclui um elemento do DOM.
+
+```javascript
+event.target.parentNode.remove();
+```
+
+Durante o curso, foi utilizado para remover pacientes da tabela quando o usuário realizava um duplo clique sobre uma linha.
+
+---
+
+### setTimeout()
+
+O método `setTimeout()` executa uma função após um intervalo de tempo especificado em milissegundos.
+
+```javascript
+setTimeout(function() {
+    paciente.remove();
+}, 500);
+```
+
+No projeto, ele foi utilizado para aguardar a animação de desaparecimento da linha antes de removê-la do DOM, proporcionando uma experiência mais agradável ao usuário.
+
+```javascript
+paciente.classList.add("fadeOut");
+
+setTimeout(function() {
+    paciente.remove();
+}, 500);
+```
+
+Essa técnica permite combinar JavaScript com animações CSS, tornando a interface mais fluida.
 
 ---
 
